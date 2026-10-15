@@ -1,0 +1,109 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="container hero-inner">
+        <div class="hero-copy">
+            <p class="hero-brand">BoltSports</p>
+            <h1>BEST&nbsp;GEAR</h1>
+            <p class="hero-lead">Quality equipment for cricket, football, badminton, basketball, tennis and fitness.</p>
+            <a href="{% url 'product_list' %}" class="btn btn-accent">Shop Now</a>
+        </div>
+        <div class="hero-visual">
+            <div class="hero-frame">
+                {% if hero.image %}
+                    <img src="{{ hero.image.url }}" alt="{{ hero.name }}">
+                {% elif hero %}
+                    <div class="hero-placeholder">{{ hero.sport.icon|default:"SZ" }}</div>
+                {% else %}
+                    <div class="hero-placeholder">SZ</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if sports %}
+<section class="brand-bar" aria-label="Shop by sport">
+    <div class="container brand-bar-track">
+        {% for sport in sports %}
+            <a href="{% url 'product_list' %}?sport={{ sport.slug }}">{{ sport.name }}</a>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="section section-light">
+    <div class="container">
+        <div class="trending-layout">
+            <div class="trending-head">
+                <h2>SHOP BY<br>SPORT</h2>
+                <a href="{% url 'product_list' %}" class="arrow-link" aria-label="View all sports">
+                    <svg width="48" height="24" viewBox="0 0 48 24" fill="none" aria-hidden="true"><path d="M0 12h46M36 2l10 10-10 10" stroke="currentColor" stroke-width="2"/></svg>
+                </a>
+            </div>
+            <div class="sport-editorial">
+                {% for sport in sports %}
+                    <a href="{% url 'product_list' %}?sport={{ sport.slug }}" class="sport-tile sport-tile-{{ forloop.counter }}">
+                        <span class="sport-icon">{{ sport.icon|default:"•" }}</span>
+                        <span class="sport-name">{{ sport.name }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% if featured %}
+<section class="section section-products">
+    <div class="container">
+        <div class="section-head">
+            <h2 class="section-title">Our Products</h2>
+            <a href="{% url 'product_list' %}" class="see-all">See all</a>
+        </div>
+        <div class="product-grid">
+            {% for product in featured %}
+                {% include 'store/_product_card.html' %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="express-section">
+    <div class="container express-inner">
+        <div class="express-copy">
+            <h2>LET YOUR GEAR<br>EXPRESS WHO<br>YOU ARE</h2>
+            <p>From first practice to match day — kit that keeps up with how you play.</p>
+            <a href="{% url 'product_list' %}" class="btn btn-accent">Explore Collection</a>
+        </div>
+        {% if featured.1.image or featured.0.image %}
+        <div class="express-visual">
+            {% if featured.1.image %}
+                <img src="{{ featured.1.image.url }}" alt="{{ featured.1.name }}">
+            {% else %}
+                <img src="{{ featured.0.image.url }}" alt="{{ featured.0.name }}">
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
+<section class="section section-light section-features">
+    <div class="container features">
+        <div>
+            <strong>Quality Products</strong>
+            <p>Equipment for every level of player</p>
+        </div>
+        <div>
+            <strong>Cash on Delivery</strong>
+            <p>Pay when your order arrives</p>
+        </div>
+        <div>
+            <strong>Easy Ordering</strong>
+            <p>Add to cart and checkout in minutes</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

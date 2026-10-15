@@ -1,0 +1,77 @@
+{% extends 'store/base.html' %}
+
+{% block title %}My Orders - BoltSports{% endblock %}
+
+{% block content %}
+<section class="ord-hero">
+    <div class="container">
+        <p class="ord-kicker">Account</p>
+        <h1 class="ord-title">My Orders</h1>
+        {% if orders %}
+            <p class="ord-lead">{{ orders|length }} order{{ orders|length|pluralize }} on your record</p>
+        {% else %}
+            <p class="ord-lead">No orders yet — your kit history starts here</p>
+        {% endif %}
+    </div>
+</section>
+
+<div class="page ord-page">
+<div class="container">
+
+{% if orders %}
+<div class="ord-list">
+    {% for order in orders %}
+    <article class="ord-card">
+        <div class="ord-card-top">
+            <div>
+                <span class="ord-num">#{{ order.id|stringformat:"04d" }}</span>
+                <time class="ord-date" datetime="{{ order.created_at|date:'c' }}">{{ order.created_at|date:"d M Y" }}</time>
+            </div>
+            <span class="status status-{{ order.status }}">{{ order.get_status_display }}</span>
+        </div>
+
+        <div class="ord-card-body">
+            <div class="ord-thumbs" aria-hidden="true">
+                {% for item in order.items.all|slice:":3" %}
+                    <span class="ord-thumb">
+                        {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="">
+                        {% else %}
+                            <span class="ord-thumb-ph">{{ item.product.sport.icon|default:"SZ" }}</span>
+                        {% endif %}
+                    </span>
+                {% endfor %}
+                {% if order.items.count > 3 %}
+                    <span class="ord-thumb ord-thumb-more">+{{ order.items.count|add:"-3" }}</span>
+                {% endif %}
+            </div>
+
+            <div class="ord-stats">
+                <div>
+                    <span class="ord-stat-label">Items</span>
+                    <strong>{{ order.items.count }}</strong>
+                </div>
+                <div>
+                    <span class="ord-stat-label">Total</span>
+                    <strong class="ord-amount">₹{{ order.total|floatformat:2 }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="ord-card-foot">
+            <a href="{% url 'order_detail' order.id %}" class="ord-track-link">View / Track →</a>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="ord-empty">
+    <p class="ord-empty-mark">No orders</p>
+    <p class="ord-empty-copy">When you place an order, it will show up here with live tracking.</p>
+    <a href="{% url 'product_list' %}" class="btn btn-accent">Start shopping</a>
+</div>
+{% endif %}
+
+</div>
+</div>
+{% endblock %}

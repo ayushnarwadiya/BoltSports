@@ -1,0 +1,74 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Shop - BoltSports{% endblock %}
+
+{% block content %}
+<div class="page">
+<div class="container">
+<h1 class="page-title">
+    {% if query %}Search results for "{{ query }}"{% else %}All Products{% endif %}
+</h1>
+
+<div class="shop-layout">
+    <aside class="filters">
+        <form method="get" id="filter-form">
+            {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+
+            <label for="sport">Sport</label>
+            <select name="sport" id="sport" class="auto-submit">
+                <option value="">All sports</option>
+                {% for sport in sports %}
+                    <option value="{{ sport.slug }}" {% if sport.slug == selected_sport %}selected{% endif %}>{{ sport.name }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="category">Category</label>
+            <select name="category" id="category" class="auto-submit">
+                <option value="">All categories</option>
+                {% for category in categories %}
+                    <option value="{{ category.slug }}" {% if category.slug == selected_category %}selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="sort">Sort by</label>
+            <select name="sort" id="sort" class="auto-submit">
+                <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest first</option>
+                <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Price: low to high</option>
+                <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Price: high to low</option>
+                <option value="name" {% if sort == 'name' %}selected{% endif %}>Name (A-Z)</option>
+            </select>
+
+            <noscript><button type="submit" class="btn btn-block">Apply</button></noscript>
+            <a href="{% url 'product_list' %}" class="clear-link">Clear filters</a>
+        </form>
+    </aside>
+
+    <section class="results">
+        <p class="result-count">{{ page_obj.paginator.count }} product{{ page_obj.paginator.count|pluralize }} found</p>
+
+        {% if page_obj %}
+            <div class="product-grid">
+                {% for product in page_obj %}
+                    {% include 'store/_product_card.html' %}
+                {% endfor %}
+            </div>
+
+            {% if page_obj.has_other_pages %}
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.previous_page_number }}">&laquo; Previous</a>
+                {% endif %}
+                <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_next %}
+                    <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.next_page_number }}">Next &raquo;</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        {% else %}
+            <p class="empty">No products match your search. Try clearing the filters.</p>
+        {% endif %}
+    </section>
+</div>
+</div>
+</div>
+{% endblock %}

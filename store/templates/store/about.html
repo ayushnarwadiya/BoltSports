@@ -1,0 +1,63 @@
+{% extends 'store/base.html' %}
+
+{% block title %}About Us - BoltSports{% endblock %}
+
+{% block content %}
+<section class="about-hero">
+    <div class="container">
+        <h1>About BoltSports</h1>
+        <p>Your one-stop online store for quality sports equipment.</p>
+    </div>
+</section>
+
+<div class="about-content">
+<div class="container">
+<section class="panel about-block">
+    <h2>Who We Are</h2>
+    <p>BoltSports is an online sports equipment store built for players of every level, from school teams and beginners to regular club players. We bring equipment for popular sports together in one place, so you can find what you need, compare prices and order in a few clicks.</p>
+</section>
+
+<section class="about-grid">
+    <div class="panel">
+        <h2>Our Mission</h2>
+        <p>To make good sports equipment easy to find and simple to buy, so that more people can enjoy playing the sport they love.</p>
+    </div>
+    <div class="panel">
+        <h2>Our Vision</h2>
+        <p>To become a trusted online destination for players and sports lovers, with a wide range of equipment for every sport.</p>
+    </div>
+</section>
+
+<section class="panel about-block">
+    <h2>What We Offer</h2>
+    <p>Shop by sport and find equipment for:</p>
+    <div class="sport-grid">
+        {% for sport in sports %}
+            <a href="{% url 'product_list' %}?sport={{ sport.slug }}" class="sport-tile">
+                <span class="sport-icon">{{ sport.icon|default:"•" }}</span>
+                <span class="sport-name">{{ sport.name }}</span>
+            </a>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="panel about-block">
+    <h2>Why Choose Us</h2>
+    <ul class="about-list">
+        <li><strong>Shop by sport:</strong> filter the whole store by your sport with one click.</li>
+        <li><strong>Wide range:</strong> bats, rackets, balls, footwear, apparel, protective gear and accessories.</li>
+        <li><strong>Simple ordering:</strong> add items to your cart and check out in minutes.</li>
+        <li><strong>Cash on delivery:</strong> pay when your order arrives.</li>
+        <li><strong>Order tracking:</strong> see all your past orders and their status in one place.</li>
+    </ul>
+</section>
+
+<section class="panel about-block">
+    <h2>Contact Us</h2>
+    <p>Email: support@boltsports.example</p>
+    <p>Phone: +91-00000-00000</p>
+    <p>Address: Nagpur, Maharashtra, India</p>
+</section>
+</div>
+</div>
+{% endblock %}

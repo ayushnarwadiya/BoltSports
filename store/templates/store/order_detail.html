@@ -1,0 +1,91 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Order #{{ order.id }} - BoltSports{% endblock %}
+
+{% block content %}
+<section class="ord-hero ord-hero-detail">
+    <div class="container">
+        <a href="{% url 'order_history' %}" class="ord-back">← All orders</a>
+        <div class="ord-detail-head">
+            <div>
+                <p class="ord-kicker">Order detail</p>
+                <h1 class="ord-title">#{{ order.id|stringformat:"04d" }}</h1>
+                <p class="ord-lead">Placed {{ order.created_at|date:"d M Y, h:i A" }}</p>
+            </div>
+            <span class="status status-{{ order.status }} ord-status-lg">{{ order.get_status_display }}</span>
+        </div>
+    </div>
+</section>
+
+<div class="page ord-page">
+<div class="container">
+
+{% if order.status == 'cancelled' %}
+    <div class="notice-cancelled">
+        This order was cancelled on {{ order.cancelled_at|date:"d M Y, h:i A" }}.
+    </div>
+{% else %}
+    <section class="ord-tracker">
+        <h2>Delivery progress</h2>
+        <ol class="tracker">
+            {% for step in order.tracking_steps %}
+                <li class="{% if step.done %}done{% endif %}">
+                    <span class="dot">{% if step.done %}&#10003;{% endif %}</span>
+                    <strong>{{ step.label }}</strong>
+                    <small>
+                        {% if step.date %}{{ step.date|date:"d M Y, h:i A" }}{% elif step.done %}&nbsp;{% else %}Waiting{% endif %}
+                    </small>
+                </li>
+            {% endfor %}
+        </ol>
+    </section>
+{% endif %}
+
+<div class="ord-detail-layout">
+    <section class="ord-items-panel">
+        <h2>Items</h2>
+        <ul class="ord-item-rows">
+            {% for item in order.items.all %}
+            <li>
+                <div class="ord-item-visual">
+                    {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                    {% else %}
+                        <span class="ord-thumb-ph">{{ item.product.sport.icon|default:"SZ" }}</span>
+                    {% endif %}
+                </div>
+                <div class="ord-item-info">
+                    <strong>{{ item.product.name }}</strong>
+                    <span>₹{{ item.price|floatformat:2 }} × {{ item.quantity }}</span>
+                </div>
+                <span class="ord-item-sub">₹{{ item.subtotal|floatformat:2 }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="ord-items-total">
+            <span>Order total</span>
+            <strong>₹{{ order.total|floatformat:2 }}</strong>
+        </div>
+    </section>
+
+    <aside class="ord-side">
+        <h2>Delivery</h2>
+        <p class="ord-side-name">{{ order.full_name }}</p>
+        <p class="ord-side-addr">{{ order.address|linebreaksbr }}<br>{{ order.city }} - {{ order.pincode }}</p>
+        <dl class="ord-side-meta">
+            <div><dt>Phone</dt><dd>{{ order.phone }}</dd></div>
+            <div><dt>Payment</dt><dd>{{ order.payment_method }}</dd></div>
+            <div><dt>Status</dt><dd><span class="status status-{{ order.status }}">{{ order.get_status_display }}</span></dd></div>
+        </dl>
+        {% if order.can_cancel %}
+            <form method="post" action="{% url 'order_cancel' order.id %}" data-confirm="Do you really want to cancel this order?">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-block">Cancel Order</button>
+            </form>
+        {% endif %}
+    </aside>
+</div>
+
+</div>
+</div>
+{% endblock %}

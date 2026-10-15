@@ -1,0 +1,45 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Order Placed - BoltSports{% endblock %}
+
+{% block content %}
+<section class="ord-hero ord-hero-success">
+    <div class="container">
+        <nav class="co-steps" aria-label="Checkout progress">
+            <span class="co-step done">01 Bag</span>
+            <span class="co-step-sep" aria-hidden="true"></span>
+            <span class="co-step done">02 Delivery</span>
+            <span class="co-step-sep" aria-hidden="true"></span>
+            <span class="co-step current">03 Placed</span>
+        </nav>
+        <p class="ord-kicker">Confirmed</p>
+        <h1 class="ord-title">Order placed</h1>
+        <p class="ord-lead">Thanks — your gear is on the way.</p>
+    </div>
+</section>
+
+<div class="page ord-page">
+<div class="container">
+    <div class="ord-success-card">
+        <div class="ord-success-num">
+            <span>Order number</span>
+            <strong>#{{ order.id|stringformat:"04d" }}</strong>
+        </div>
+        <div class="ord-success-grid">
+            <div>
+                <span class="ord-stat-label">Pay on delivery</span>
+                <p class="ord-amount">₹{{ order.total|floatformat:2 }}</p>
+            </div>
+            <div>
+                <span class="ord-stat-label">Deliver to</span>
+                <p>{{ order.full_name }}<br>{{ order.address }}, {{ order.city }} - {{ order.pincode }}</p>
+            </div>
+        </div>
+        <div class="ord-success-actions">
+            <a href="{% url 'order_detail' order.id %}" class="btn btn-accent">View / Track order</a>
+            <a href="{% url 'product_list' %}" class="bag-keep-shopping ord-success-shop">Continue shopping →</a>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+db.sqlite3
+.env
+.vscode/
+
+temp_profile/
+_prev_style.css
+_rebuild_css.py
+scratch_logo.png
+shot*.png

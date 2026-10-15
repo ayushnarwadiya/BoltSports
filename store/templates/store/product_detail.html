@@ -1,0 +1,64 @@
+{% extends 'store/base.html' %}
+
+{% block title %}{{ product.name }} - BoltSports{% endblock %}
+
+{% block content %}
+<div class="page">
+<div class="container">
+<p class="breadcrumb">
+    <a href="{% url 'home' %}">Home</a> &rsaquo;
+    <a href="{% url 'product_list' %}?sport={{ product.sport.slug }}">{{ product.sport.name }}</a> &rsaquo;
+    {{ product.name }}
+</p>
+
+<div class="detail">
+    <div class="detail-img">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        {% else %}
+            <div class="placeholder large">{{ product.sport.icon|default:"SZ" }}</div>
+        {% endif %}
+    </div>
+
+    <div class="detail-info">
+        <span class="tag">{{ product.sport.name }}</span>
+        <span class="tag tag-grey">{{ product.category.name }}</span>
+        <h1>{{ product.name }}</h1>
+        <p class="price price-large">₹{{ product.price|floatformat:2 }}</p>
+
+        {% if product.in_stock %}
+            <p class="in-stock">In stock ({{ product.stock }} available)</p>
+            <form method="post" action="{% url 'cart_add' product.id %}" class="add-form">
+                {% csrf_token %}
+                <div class="qty">
+                    <button type="button" class="qty-btn" data-step="-1">-</button>
+                    <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}">
+                    <button type="button" class="qty-btn" data-step="1">+</button>
+                </div>
+                <button type="submit" class="btn btn-accent btn-large">Add to Cart</button>
+            </form>
+        {% else %}
+            <p class="out-of-stock">Out of stock</p>
+        {% endif %}
+
+        <h3>Description</h3>
+        <p>{{ product.description|linebreaksbr }}</p>
+    </div>
+</div>
+
+{% if related %}
+<section>
+    <div class="section-head">
+        <h2 class="section-title">More {{ product.sport.name }}</h2>
+        <a href="{% url 'product_list' %}?sport={{ product.sport.slug }}" class="see-all">See all</a>
+    </div>
+    <div class="product-grid">
+        {% for product in related %}
+            {% include 'store/_product_card.html' %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+</div>
+</div>
+{% endblock %}

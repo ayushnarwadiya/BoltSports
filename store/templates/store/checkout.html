@@ -1,0 +1,103 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Checkout - BoltSports{% endblock %}
+
+{% block content %}
+<section class="co-hero">
+    <div class="container co-hero-inner">
+        <nav class="co-steps" aria-label="Checkout progress">
+            <a href="{% url 'cart' %}" class="co-step done">01 Bag</a>
+            <span class="co-step-sep" aria-hidden="true"></span>
+            <span class="co-step current">02 Delivery</span>
+            <span class="co-step-sep" aria-hidden="true"></span>
+            <span class="co-step">03 Placed</span>
+        </nav>
+        <h1 class="co-title">Delivery</h1>
+        <p class="co-lead">Where should we send your gear?</p>
+    </div>
+</section>
+
+<div class="page co-page">
+<div class="container">
+
+<div class="co-layout">
+    <aside class="co-summary">
+        <h2>In your bag</h2>
+        <ul class="co-items">
+            {% for item in items %}
+            <li>
+                <a href="{{ item.product.get_absolute_url }}" class="co-item-thumb">
+                    {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="">
+                    {% else %}
+                        <span>{{ item.product.sport.icon|default:"SZ" }}</span>
+                    {% endif %}
+                </a>
+                <div class="co-item-meta">
+                    <strong>{{ item.product.name }}</strong>
+                    <span>× {{ item.quantity }}</span>
+                </div>
+                <span class="co-item-price">₹{{ item.subtotal|floatformat:2 }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="co-total">
+            <span>Total due on delivery</span>
+            <strong>₹{{ total|floatformat:2 }}</strong>
+        </div>
+        <a href="{% url 'cart' %}" class="co-edit-bag">← Edit bag</a>
+    </aside>
+
+    <section class="co-form-wrap">
+        <form method="post" novalidate class="co-form">
+            {% csrf_token %}
+
+            <div class="co-form-grid">
+                <div class="form-row">
+                    <label for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
+                    {{ form.full_name }}
+                    {% for error in form.full_name.errors %}<p class="error">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="form-row">
+                    <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+                    {{ form.phone }}
+                    {% for error in form.phone.errors %}<p class="error">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="form-row co-span-2">
+                    <label for="{{ form.address.id_for_label }}">{{ form.address.label }}</label>
+                    {{ form.address }}
+                    {% for error in form.address.errors %}<p class="error">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="form-row">
+                    <label for="{{ form.city.id_for_label }}">{{ form.city.label }}</label>
+                    {{ form.city }}
+                    {% for error in form.city.errors %}<p class="error">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="form-row">
+                    <label for="{{ form.pincode.id_for_label }}">{{ form.pincode.label }}</label>
+                    {{ form.pincode }}
+                    {% for error in form.pincode.errors %}<p class="error">{{ error }}</p>{% endfor %}
+                </div>
+            </div>
+
+            <div class="co-pay">
+                <div class="co-pay-card is-selected">
+                    <span class="co-pay-mark">COD</span>
+                    <div>
+                        <strong>Cash on Delivery</strong>
+                        <p>Pay when your order arrives. No online payment needed.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="co-submit-bar">
+                <p class="co-submit-hint">By placing this order you confirm the delivery details above.</p>
+                <button type="submit" class="btn btn-accent btn-large">Place Order</button>
+            </div>
+        </form>
+    </section>
+</div>
+
+</div>
+</div>
+{% endblock %}

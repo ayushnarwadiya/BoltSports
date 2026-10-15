@@ -1,0 +1,86 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Your Cart - BoltSports{% endblock %}
+
+{% block content %}
+<section class="bag-hero">
+    <div class="container bag-hero-inner">
+        <p class="bag-kicker">BoltSports</p>
+        <h1 class="bag-title">Your Bag</h1>
+        {% if items %}
+            <p class="bag-count">{{ items|length }} item{{ items|length|pluralize }} ready to check out</p>
+        {% else %}
+            <p class="bag-count">Nothing in here yet</p>
+        {% endif %}
+    </div>
+</section>
+
+<div class="page bag-page">
+<div class="container">
+
+{% if items %}
+<div class="bag-layout">
+    <div class="bag-list">
+        {% for item in items %}
+        <article class="bag-item">
+            <a href="{{ item.product.get_absolute_url }}" class="bag-thumb">
+                {% if item.product.image %}
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                {% else %}
+                    <span class="bag-thumb-ph">{{ item.product.sport.icon|default:"SZ" }}</span>
+                {% endif %}
+            </a>
+
+            <div class="bag-meta">
+                <span class="bag-index">{{ forloop.counter|stringformat:"02d" }}</span>
+                <span class="tag">{{ item.product.sport.name }}</span>
+                <h2><a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a></h2>
+                <p class="bag-unit">₹{{ item.product.price|floatformat:2 }} each</p>
+
+                <div class="bag-controls">
+                    <form method="post" action="{% url 'cart_update' item.product.id %}" class="bag-qty-form">
+                        {% csrf_token %}
+                        <div class="qty">
+                            <button type="button" class="qty-btn" data-step="-1" aria-label="Decrease">−</button>
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="qty-input" aria-label="Quantity">
+                            <button type="button" class="qty-btn" data-step="1" aria-label="Increase">+</button>
+                        </div>
+                        <button type="submit" class="bag-update">Update</button>
+                    </form>
+
+                    <form method="post" action="{% url 'cart_remove' item.product.id %}" class="inline-form" data-confirm="Remove this item from your cart?">
+                        {% csrf_token %}
+                        <button type="submit" class="bag-remove">Remove</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="bag-line-total">
+                <span>Line total</span>
+                <strong>₹{{ item.subtotal|floatformat:2 }}</strong>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    <aside class="bag-rail">
+        <div class="bag-rail-inner">
+            <p class="bag-rail-label">Order total</p>
+            <p class="bag-rail-amount">₹{{ total|floatformat:2 }}</p>
+            <p class="bag-rail-note">Cash on delivery · Free shipping estimate at checkout</p>
+            <a href="{% url 'checkout' %}" class="btn btn-accent btn-large bag-checkout-btn">Checkout</a>
+            <a href="{% url 'product_list' %}" class="bag-keep-shopping">Keep shopping →</a>
+        </div>
+    </aside>
+</div>
+{% else %}
+<div class="bag-empty">
+    <p class="bag-empty-mark">Empty</p>
+    <p class="bag-empty-copy">Your bag is waiting for the right kit.</p>
+    <a href="{% url 'product_list' %}" class="btn btn-accent">Browse gear</a>
+</div>
+{% endif %}
+
+</div>
+</div>
+{% endblock %}
