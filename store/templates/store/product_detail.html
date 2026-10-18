@@ -1,64 +1,104 @@
 {% extends 'store/base.html' %}
+{% load static %}
 
 {% block title %}{{ product.name }} - BoltSports{% endblock %}
 
 {% block content %}
-<div class="page">
-<div class="container">
-<p class="breadcrumb">
-    <a href="{% url 'home' %}">Home</a> &rsaquo;
-    <a href="{% url 'product_list' %}?sport={{ product.sport.slug }}">{{ product.sport.name }}</a> &rsaquo;
-    {{ product.name }}
-</p>
 
-<div class="detail">
-    <div class="detail-img">
-        {% if product.image %}
-            <img src="{{ product.image.url }}" alt="{{ product.name }}">
-        {% else %}
-            <div class="placeholder large">{{ product.sport.icon|default:"SZ" }}</div>
-        {% endif %}
-    </div>
+<section class="pd">
+    <div class="container">
+        <nav class="pd-crumbs" aria-label="Breadcrumb">
+            <a href="{% url 'home' %}">Home</a> <span>/</span>
+            <a href="{% url 'product_list' %}">Shop</a> <span>/</span>
+            <a href="{% url 'product_list' %}?sport={{ product.sport.slug }}">{{ product.sport.name }}</a> <span>/</span>
+            <strong>{{ product.name }}</strong>
+        </nav>
 
-    <div class="detail-info">
-        <span class="tag">{{ product.sport.name }}</span>
-        <span class="tag tag-grey">{{ product.category.name }}</span>
-        <h1>{{ product.name }}</h1>
-        <p class="price price-large">₹{{ product.price|floatformat:2 }}</p>
-
-        {% if product.in_stock %}
-            <p class="in-stock">In stock ({{ product.stock }} available)</p>
-            <form method="post" action="{% url 'cart_add' product.id %}" class="add-form">
-                {% csrf_token %}
-                <div class="qty">
-                    <button type="button" class="qty-btn" data-step="-1">-</button>
-                    <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}">
-                    <button type="button" class="qty-btn" data-step="1">+</button>
+        <div class="pd-grid">
+            <div class="pd-gallery">
+                <div class="pd-frame">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                        <span class="pd-ph">{{ product.sport.icon|default:"•" }}</span>
+                    {% endif %}
+                    <span class="sp-badge">{{ product.sport.name }}</span>
                 </div>
-                <button type="submit" class="btn btn-accent btn-large">Add to Cart</button>
-            </form>
-        {% else %}
-            <p class="out-of-stock">Out of stock</p>
-        {% endif %}
+            </div>
 
-        <h3>Description</h3>
-        <p>{{ product.description|linebreaksbr }}</p>
+            <div class="pd-info">
+                <div class="pd-tags">
+                    <a href="{% url 'product_list' %}?sport={{ product.sport.slug }}" class="pd-tag pd-tag-dark">{{ product.sport.name }}</a>
+                    <a href="{% url 'product_list' %}?category={{ product.category.slug }}" class="pd-tag">{{ product.category.name }}</a>
+                </div>
+
+                <h1>{{ product.name }}</h1>
+                <p class="pd-price">₹{{ product.price|floatformat:2 }}</p>
+
+                {% if product.in_stock %}
+                    {% if product.stock <= 5 %}
+                        <p class="pd-stock pd-stock-low"><i></i>Only {{ product.stock }} left &mdash; order soon</p>
+                    {% else %}
+                        <p class="pd-stock pd-stock-ok"><i></i>In stock ({{ product.stock }} available)</p>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'cart_add' product.id %}" class="pd-buy">
+                        {% csrf_token %}
+                        <div class="qty">
+                            <button type="button" class="qty-btn" data-step="-1" aria-label="Decrease quantity">&minus;</button>
+                            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" aria-label="Quantity">
+                            <button type="button" class="qty-btn" data-step="1" aria-label="Increase quantity">+</button>
+                        </div>
+                        <button type="submit" class="pd-add">Add to Bag</button>
+                    </form>
+                {% else %}
+                    <p class="pd-stock pd-stock-out"><i></i>Out of stock</p>
+                    <a href="{% url 'product_list' %}?sport={{ product.sport.slug }}" class="pd-add pd-add-link">See more {{ product.sport.name }}</a>
+                {% endif %}
+
+                <ul class="pd-perks">
+                    <li>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="1"/><circle cx="12" cy="12" r="3"/></svg>
+                        <span><strong>Cash on delivery</strong>Pay when your order arrives</span>
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                        <span><strong>Order tracking</strong>Follow it from placed to delivered</span>
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+                        <span><strong>Simple ordering</strong>Check out in a few clicks</span>
+                    </li>
+                </ul>
+
+                <div class="pd-desc">
+                    <h2>About this product</h2>
+                    <p>{{ product.description|linebreaksbr }}</p>
+                </div>
+
+                <dl class="pd-specs">
+                    <div><dt>Sport</dt><dd>{{ product.sport.name }}</dd></div>
+                    <div><dt>Category</dt><dd>{{ product.category.name }}</dd></div>
+                    <div><dt>Availability</dt><dd>{% if product.in_stock %}In stock{% else %}Out of stock{% endif %}</dd></div>
+                </dl>
+            </div>
+        </div>
     </div>
-</div>
+</section>
 
 {% if related %}
-<section>
-    <div class="section-head">
-        <h2 class="section-title">More {{ product.sport.name }}</h2>
-        <a href="{% url 'product_list' %}?sport={{ product.sport.slug }}" class="see-all">See all</a>
-    </div>
-    <div class="product-grid">
-        {% for product in related %}
-            {% include 'store/_product_card.html' %}
-        {% endfor %}
+<section class="pd-related">
+    <div class="container">
+        <div class="pd-related-head">
+            <h2>MORE {{ product.sport.name }}</h2>
+            <a href="{% url 'product_list' %}?sport={{ product.sport.slug }}">See all &rarr;</a>
+        </div>
+        <div class="sp-grid sp-grid-4">
+            {% for product in related %}
+                {% include 'store/_shop_card.html' %}
+            {% endfor %}
+        </div>
     </div>
 </section>
 {% endif %}
-</div>
-</div>
 {% endblock %}

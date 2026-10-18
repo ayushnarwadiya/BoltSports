@@ -1,4 +1,5 @@
 {% extends 'store/base.html' %}
+{% load static %}
 
 {% block content %}
 <section class="hero">
@@ -106,4 +107,20 @@
         </div>
     </div>
 </section>
+
+<script src="{% static 'store/js/three.min.js' %}"></script>
+<script src="{% static 'store/js/vanta.waves.min.js' %}"></script>
+<script>
+VANTA.WAVES({
+ el: ".hero-bg",
+ mouseControls: true,
+ touchControls: true,
+ gyroControls: false,
+ minHeight: 200.00,
+ minWidth: 200.00,
+ scale: 1.00,
+ scaleMobile: 1.00,
+ color: 0x0c1115
+});
+</script>
 {% endblock %}

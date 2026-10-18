@@ -1,74 +1,98 @@
 {% extends 'store/base.html' %}
+{% load static %}
 
 {% block title %}Shop - BoltSports{% endblock %}
 
 {% block content %}
-<div class="page">
-<div class="container">
-<h1 class="page-title">
-    {% if query %}Search results for "{{ query }}"{% else %}All Products{% endif %}
-</h1>
 
-<div class="shop-layout">
-    <aside class="filters">
-        <form method="get" id="filter-form">
+<section class="sp-hero">
+    <div class="sp-hero-lines" aria-hidden="true"></div>
+    <div class="container sp-hero-inner">
+        <p class="sp-crumbs"><a href="{% url 'home' %}">Home</a> <span>/</span> Shop</p>
+        <h1>
+            {% if query %}Results for &ldquo;{{ query }}&rdquo;
+            {% elif selected_sport %}{% for sport in sports %}{% if sport.slug == selected_sport %}{{ sport.name }}{% endif %}{% endfor %}
+            {% else %}All Products{% endif %}
+        </h1>
+        <p class="sp-sub">{{ page_obj.paginator.count }} product{{ page_obj.paginator.count|pluralize }} found</p>
+    </div>
+</section>
+
+<div class="sp-toolbar">
+    <div class="container sp-toolbar-inner">
+        <nav class="sp-chips" aria-label="Filter by sport">
+            <a class="sp-chip{% if not selected_sport %} is-active{% endif %}" href="?sport=&amp;category={{ selected_category }}&amp;sort={{ sort }}&amp;q={{ query|urlencode }}">All</a>
+            {% for sport in sports %}
+                <a class="sp-chip{% if sport.slug == selected_sport %} is-active{% endif %}" href="?sport={{ sport.slug }}&amp;category={{ selected_category }}&amp;sort={{ sort }}&amp;q={{ query|urlencode }}"><span aria-hidden="true">{{ sport.icon }}</span>{{ sport.name }}</a>
+            {% endfor %}
+        </nav>
+
+        <form method="get" id="filter-form" class="sp-controls">
+            <input type="hidden" name="sport" value="{{ selected_sport }}">
             {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
 
-            <label for="sport">Sport</label>
-            <select name="sport" id="sport" class="auto-submit">
-                <option value="">All sports</option>
-                {% for sport in sports %}
-                    <option value="{{ sport.slug }}" {% if sport.slug == selected_sport %}selected{% endif %}>{{ sport.name }}</option>
-                {% endfor %}
-            </select>
+            <label class="sp-select">
+                <span>Category</span>
+                <select name="category" id="category" class="auto-submit">
+                    <option value="">All categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.slug }}" {% if category.slug == selected_category %}selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
 
-            <label for="category">Category</label>
-            <select name="category" id="category" class="auto-submit">
-                <option value="">All categories</option>
-                {% for category in categories %}
-                    <option value="{{ category.slug }}" {% if category.slug == selected_category %}selected{% endif %}>{{ category.name }}</option>
-                {% endfor %}
-            </select>
+            <label class="sp-select">
+                <span>Sort by</span>
+                <select name="sort" id="sort" class="auto-submit">
+                    <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest first</option>
+                    <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Price: low to high</option>
+                    <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Price: high to low</option>
+                    <option value="name" {% if sort == 'name' %}selected{% endif %}>Name (A-Z)</option>
+                </select>
+            </label>
 
-            <label for="sort">Sort by</label>
-            <select name="sort" id="sort" class="auto-submit">
-                <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest first</option>
-                <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Price: low to high</option>
-                <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Price: high to low</option>
-                <option value="name" {% if sort == 'name' %}selected{% endif %}>Name (A-Z)</option>
-            </select>
-
-            <noscript><button type="submit" class="btn btn-block">Apply</button></noscript>
-            <a href="{% url 'product_list' %}" class="clear-link">Clear filters</a>
+            <noscript><button type="submit" class="btn btn-small">Apply</button></noscript>
+            {% if selected_sport or selected_category or query %}
+                <a href="{% url 'product_list' %}" class="sp-clear">Clear filters &times;</a>
+            {% endif %}
         </form>
-    </aside>
+    </div>
+</div>
 
-    <section class="results">
-        <p class="result-count">{{ page_obj.paginator.count }} product{{ page_obj.paginator.count|pluralize }} found</p>
-
+<section class="sp-results">
+    <div class="container">
         {% if page_obj %}
-            <div class="product-grid">
+            <div class="sp-grid">
                 {% for product in page_obj %}
-                    {% include 'store/_product_card.html' %}
+                    {% include 'store/_shop_card.html' %}
                 {% endfor %}
             </div>
 
             {% if page_obj.has_other_pages %}
-            <div class="pagination">
+            <nav class="sp-pager" aria-label="Pages">
                 {% if page_obj.has_previous %}
-                    <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.previous_page_number }}">&laquo; Previous</a>
+                    <a class="sp-page sp-page-wide" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">&larr; Prev</a>
                 {% endif %}
-                <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                {% for n in page_obj.paginator.page_range %}
+                    {% if n == page_obj.number %}
+                        <span class="sp-page is-current" aria-current="page">{{ n }}</span>
+                    {% else %}
+                        <a class="sp-page" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ n }}">{{ n }}</a>
+                    {% endif %}
+                {% endfor %}
                 {% if page_obj.has_next %}
-                    <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.next_page_number }}">Next &raquo;</a>
+                    <a class="sp-page sp-page-wide" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Next &rarr;</a>
                 {% endif %}
-            </div>
+            </nav>
             {% endif %}
         {% else %}
-            <p class="empty">No products match your search. Try clearing the filters.</p>
+            <div class="sp-empty">
+                <span class="sp-empty-icon" aria-hidden="true">&#128269;</span>
+                <h2>NO PRODUCTS FOUND</h2>
+                <p>No products match your search. Try a different sport or clear the filters.</p>
+                <a href="{% url 'product_list' %}" class="btn">Clear filters</a>
+            </div>
         {% endif %}
-    </section>
-</div>
-</div>
-</div>
+    </div>
+</section>
 {% endblock %}

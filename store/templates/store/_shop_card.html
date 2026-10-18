@@ -1,0 +1,30 @@
+<article class="sp-card{% if not product.in_stock %} is-soldout{% endif %}">
+    <a href="{{ product.get_absolute_url }}" class="sp-card-media" aria-label="{{ product.name }}">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+        {% else %}
+            <span class="sp-ph">{{ product.sport.icon|default:"•" }}</span>
+        {% endif %}
+        <span class="sp-badge">{{ product.sport.name }}</span>
+        {% if not product.in_stock %}
+            <span class="sp-flag sp-flag-out">Sold out</span>
+        {% elif product.stock <= 5 %}
+            <span class="sp-flag sp-flag-low">Only {{ product.stock }} left</span>
+        {% endif %}
+    </a>
+    <div class="sp-card-body">
+        <p class="sp-cat">{{ product.category.name }}</p>
+        <h3><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
+        <div class="sp-card-foot">
+            <p class="sp-price">₹{{ product.price|floatformat:2 }}</p>
+            {% if product.in_stock %}
+                <form method="post" action="{% url 'cart_add' product.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="quantity" value="1">
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button type="submit" class="sp-add" aria-label="Add {{ product.name }} to bag"><span>+</span> Add</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</article>

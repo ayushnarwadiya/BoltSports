@@ -1,63 +1,124 @@
 {% extends 'store/base.html' %}
+{% load static %}
 
 {% block title %}About Us - BoltSports{% endblock %}
 
 {% block content %}
-<section class="about-hero">
+
+<!-- Hero -->
+<section class="ab-hero">
+    <div class="ab-hero-lines" aria-hidden="true"></div>
+    <svg class="ab-bolt" viewBox="0 0 100 160" aria-hidden="true">
+        <path d="M62 0 L8 92 H44 L34 160 L92 62 H54 Z"/>
+    </svg>
+    <div class="container ab-hero-inner">
+        <p class="ab-kicker">Our story</p>
+        <h1>ABOUT<br>BOLT<span>SPORTS</span></h1>
+        <p class="ab-lead">Your one-stop online store for quality sports equipment.</p>
+        <a href="{% url 'product_list' %}" class="btn btn-accent">Start Shopping</a>
+    </div>
+</section>
+
+<!-- Who we are -->
+<section class="ab-section">
+    <div class="container ab-story">
+        <div>
+            <p class="ab-tag">Who we are</p>
+            <h2>BUILT FOR PLAYERS<br>OF EVERY LEVEL</h2>
+        </div>
+        <div>
+            <p class="ab-big">BoltSports is an online sports equipment store built for players of every level, from school teams and beginners to regular club players.</p>
+            <p>We bring equipment for popular sports together in one place, so you can find what you need, compare prices and order in a few clicks.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Mission and vision -->
+<section class="ab-section ab-section-tint">
+    <div class="container ab-duo">
+        <article class="ab-card ab-card-dark">
+            <span class="ab-num">01</span>
+            <h3>OUR MISSION</h3>
+            <p>To make good sports equipment easy to find and simple to buy, so that more people can enjoy playing the sport they love.</p>
+        </article>
+        <article class="ab-card ab-card-light">
+            <span class="ab-num">02</span>
+            <h3>OUR VISION</h3>
+            <p>To become a trusted online destination for players and sports lovers, with a wide range of equipment for every sport.</p>
+        </article>
+    </div>
+</section>
+
+<!-- Sports -->
+<section class="ab-section">
     <div class="container">
-        <h1>About BoltSports</h1>
-        <p>Your one-stop online store for quality sports equipment.</p>
+        <div class="ab-head">
+            <p class="ab-tag">What we offer</p>
+            <h2>SHOP BY SPORT</h2>
+            <p>Pick your sport and find bats, rackets, balls, footwear, apparel, protective gear and accessories.</p>
+        </div>
+        <div class="ab-sports">
+            {% for sport in sports %}
+                <a href="{% url 'product_list' %}?sport={{ sport.slug }}" class="ab-sport">
+                    <span class="ab-sport-icon">{{ sport.icon|default:"•" }}</span>
+                    <span class="ab-sport-name">{{ sport.name }}</span>
+                    <span class="ab-sport-go" aria-hidden="true">→</span>
+                </a>
+            {% endfor %}
+        </div>
     </div>
 </section>
 
-<div class="about-content">
-<div class="container">
-<section class="panel about-block">
-    <h2>Who We Are</h2>
-    <p>BoltSports is an online sports equipment store built for players of every level, from school teams and beginners to regular club players. We bring equipment for popular sports together in one place, so you can find what you need, compare prices and order in a few clicks.</p>
-</section>
-
-<section class="about-grid">
-    <div class="panel">
-        <h2>Our Mission</h2>
-        <p>To make good sports equipment easy to find and simple to buy, so that more people can enjoy playing the sport they love.</p>
-    </div>
-    <div class="panel">
-        <h2>Our Vision</h2>
-        <p>To become a trusted online destination for players and sports lovers, with a wide range of equipment for every sport.</p>
-    </div>
-</section>
-
-<section class="panel about-block">
-    <h2>What We Offer</h2>
-    <p>Shop by sport and find equipment for:</p>
-    <div class="sport-grid">
-        {% for sport in sports %}
-            <a href="{% url 'product_list' %}?sport={{ sport.slug }}" class="sport-tile">
-                <span class="sport-icon">{{ sport.icon|default:"•" }}</span>
-                <span class="sport-name">{{ sport.name }}</span>
-            </a>
-        {% endfor %}
+<!-- Why choose us -->
+<section class="ab-section ab-section-dark">
+    <div class="container">
+        <div class="ab-head ab-head-light">
+            <p class="ab-tag">Why choose us</p>
+            <h2>MADE SIMPLE</h2>
+        </div>
+        <div class="ab-why">
+            <div class="ab-why-item"><span>01</span><h3>Shop by sport</h3><p>Filter the whole store by your sport with one click.</p></div>
+            <div class="ab-why-item"><span>02</span><h3>Wide range</h3><p>Bats, rackets, balls, footwear, apparel, protective gear and accessories.</p></div>
+            <div class="ab-why-item"><span>03</span><h3>Simple ordering</h3><p>Add items to your cart and check out in minutes.</p></div>
+            <div class="ab-why-item"><span>04</span><h3>Cash on delivery</h3><p>Pay when your order arrives. No online payment needed.</p></div>
+            <div class="ab-why-item"><span>05</span><h3>Order tracking</h3><p>See all your past orders and their delivery status in one place.</p></div>
+        </div>
     </div>
 </section>
 
-<section class="panel about-block">
-    <h2>Why Choose Us</h2>
-    <ul class="about-list">
-        <li><strong>Shop by sport:</strong> filter the whole store by your sport with one click.</li>
-        <li><strong>Wide range:</strong> bats, rackets, balls, footwear, apparel, protective gear and accessories.</li>
-        <li><strong>Simple ordering:</strong> add items to your cart and check out in minutes.</li>
-        <li><strong>Cash on delivery:</strong> pay when your order arrives.</li>
-        <li><strong>Order tracking:</strong> see all your past orders and their status in one place.</li>
-    </ul>
+<!-- How it works -->
+<section class="ab-section">
+    <div class="container">
+        <div class="ab-head">
+            <p class="ab-tag">How it works</p>
+            <h2>FROM CART TO DOORSTEP</h2>
+        </div>
+        <ol class="ab-steps">
+            <li><span class="ab-step-dot">1</span><h3>Browse</h3><p>Choose your sport and find the gear you need.</p></li>
+            <li><span class="ab-step-dot">2</span><h3>Add to bag</h3><p>Pick the quantity and add it to your bag.</p></li>
+            <li><span class="ab-step-dot">3</span><h3>Check out</h3><p>Enter your delivery details and place the order.</p></li>
+            <li><span class="ab-step-dot">4</span><h3>Track it</h3><p>Follow the order from placed to delivered.</p></li>
+        </ol>
+    </div>
 </section>
 
-<section class="panel about-block">
-    <h2>Contact Us</h2>
-    <p>Email: support@boltsports.example</p>
-    <p>Phone: +91-00000-00000</p>
-    <p>Address: Nagpur, Maharashtra, India</p>
+<!-- Contact -->
+<section class="ab-section ab-section-last">
+    <div class="container">
+        <div class="ab-contact">
+            <div>
+                <p class="ab-tag ab-tag-light">Contact us</p>
+                <h2>GOT A QUESTION?</h2>
+                <p class="ab-contact-text">We are happy to help with your order or to find the right equipment.</p>
+                <a href="{% url 'product_list' %}" class="btn btn-accent">Start Shopping</a>
+            </div>
+            <ul class="ab-contact-list">
+                <li><span>Email</span>support@boltsports.example</li>
+                <li><span>Phone</span>+91-00000-00000</li>
+                <li><span>Address</span>Nagpur, Maharashtra, India</li>
+            </ul>
+        </div>
+    </div>
 </section>
-</div>
-</div>
+
 {% endblock %}
